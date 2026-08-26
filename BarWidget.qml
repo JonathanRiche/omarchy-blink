@@ -84,9 +84,8 @@ BarWidget {
     id: button
     anchors.fill: parent
     bar: root.bar
-    // A wordmark is intentional here: private-use icon mappings vary between
-    // Nerd Font releases and can turn camera glyphs into Wi-Fi-like symbols.
-    text: root.refreshing ? "blink…" : "blink"
+    // Font Awesome's video-camera glyph is bundled with Omarchy's Nerd Font.
+    text: root.refreshing ? "󰑐" : ""
     tooltipText: root.lastError ? "Blink: " + root.lastError : (root.connected ? (root.armed ? "Blink armed" : "Blink disarmed") : "Connect Blink")
     onPressed: function(buttonCode) { if (buttonCode === Qt.LeftButton) root.toggle() }
   }
