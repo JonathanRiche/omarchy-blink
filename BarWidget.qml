@@ -84,7 +84,7 @@ BarWidget {
     id: button
     anchors.fill: parent
     bar: root.bar
-    text: root.refreshing ? "󰑐" : (root.connected ? (root.armed ? "󰄀" : "󰄁") : "󰖪")
+    text: root.refreshing ? "󰑐" : (root.armed ? "󰄀" : "󰄁")
     tooltipText: root.lastError ? "Blink: " + root.lastError : (root.connected ? (root.armed ? "Blink armed" : "Blink disarmed") : "Connect Blink")
     onPressed: function(buttonCode) { if (buttonCode === Qt.LeftButton) root.toggle() }
   }
