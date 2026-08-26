@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
-  "id": "io.github.rtg.omarchy-blink",
+  "id": "io.github.jonathanriche.omarchy-blink",
   "name": "Blink Cameras",
-  "version": "0.1.0",
-  "author": "RTG",
+  "version": "1.0.0",
+  "author": "Jonathan Riche",
   "license": "MIT",
   "description": "Blink camera status, thumbnails, and arm controls in the Omarchy bar.",
   "kinds": ["bar-widget"],

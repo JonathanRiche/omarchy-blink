@@ -1,0 +1,35 @@
+name: Bug report
+description: Report a reproducible problem with the Blink Cameras widget
+title: "[Bug]: "
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: "Never include credentials, tokens, camera images, or the contents of ~/.local/state/omarchy-blink."
+  - type: input
+    id: omarchy
+    attributes:
+      label: Omarchy version
+      placeholder: Output of `omarchy version`
+    validations:
+      required: true
+  - type: input
+    id: camera
+    attributes:
+      label: Blink camera model
+      placeholder: Outdoor 4, Mini 2, Doorbell, etc.
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: What happened?
+      description: Include clear reproduction steps and the expected result.
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Sanitized logs
+      description: Remove account IDs, tokens, personal names, and camera media.
+      render: text

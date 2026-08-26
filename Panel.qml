@@ -8,7 +8,7 @@ import qs.Ui
 
 Panel {
   id: root
-  moduleName: "io.github.rtg.omarchy-blink"
+  moduleName: "io.github.jonathanriche.omarchy-blink"
   manageIpc: false
 
   property var anchorItem: null

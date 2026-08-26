@@ -5,7 +5,7 @@ import qs.Ui
 
 BarWidget {
   id: root
-  moduleName: "io.github.rtg.omarchy-blink"
+  moduleName: "io.github.jonathanriche.omarchy-blink"
 
   property bool connected: false
   property bool armed: false

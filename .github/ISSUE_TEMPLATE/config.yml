@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Security vulnerability
+    url: https://github.com/JonathanRiche/omarchy-blink/security/advisories/new
+    about: Report credential, token, permission, or camera-media exposure privately.
