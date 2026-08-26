@@ -1,0 +1,34 @@
+{
+  "schemaVersion": 1,
+  "id": "io.github.rtg.omarchy-blink",
+  "name": "Blink Cameras",
+  "version": "0.1.0",
+  "author": "RTG",
+  "license": "MIT",
+  "description": "Blink camera status, thumbnails, and arm controls in the Omarchy bar.",
+  "kinds": ["bar-widget"],
+  "entryPoints": {
+    "barWidget": "BarWidget.qml"
+  },
+  "barWidget": {
+    "displayName": "Blink Cameras",
+    "description": "Connect Blink, inspect cameras, and arm or disarm your systems.",
+    "category": "System",
+    "allowMultiple": false,
+    "defaultSection": "right",
+    "defaults": {
+      "refreshIntervalSec": 60
+    },
+    "schema": [
+      {
+        "key": "refreshIntervalSec",
+        "type": "integer",
+        "label": "Refresh interval (seconds)",
+        "min": 60,
+        "max": 3600,
+        "step": 30,
+        "defaultValue": 60
+      }
+    ]
+  }
+}
