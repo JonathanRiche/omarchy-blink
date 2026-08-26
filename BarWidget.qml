@@ -84,7 +84,10 @@ BarWidget {
     id: button
     anchors.fill: parent
     bar: root.bar
-    text: root.refreshing ? "󰑐" : (root.armed ? "󰄀" : "󰄁")
+    // Omarchy's audio device model uses this exact glyph for cameras/webcams.
+    // Keep connection and armed state in the tooltip instead of swapping to
+    // camera-off, which resembles a disconnected Wi-Fi symbol in Nerd Fonts.
+    text: root.refreshing ? "󰑐" : "󰄀"
     tooltipText: root.lastError ? "Blink: " + root.lastError : (root.connected ? (root.armed ? "Blink armed" : "Blink disarmed") : "Connect Blink")
     onPressed: function(buttonCode) { if (buttonCode === Qt.LeftButton) root.toggle() }
   }
