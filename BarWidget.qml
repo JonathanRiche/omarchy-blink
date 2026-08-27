@@ -15,6 +15,13 @@ BarWidget {
   readonly property bool opened: panelLoader.item ? panelLoader.item.opened === true : false
   readonly property bool popoutSwitchClosing: panelLoader.item ? panelLoader.item.popoutSwitchClosing === true : false
 
+  function autoTextSafe(value) {
+    return String(value || "")
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+  }
+
   function applyStatus(text) {
     try {
       var data = JSON.parse(String(text || "{}"))
@@ -30,7 +37,7 @@ BarWidget {
   function refresh() {
     if (refreshing) return
     refreshing = true
-    statusProcess.command = ["uv", "run", helperPath, "status"]
+    statusProcess.command = ["uv", "run", "--locked", helperPath, "status"]
     statusProcess.running = true
   }
 
@@ -86,7 +93,7 @@ BarWidget {
     bar: root.bar
     // Font Awesome's video-camera glyph is bundled with Omarchy's Nerd Font.
     text: root.refreshing ? "󰑐" : ""
-    tooltipText: root.lastError ? "Blink: " + root.lastError : (root.connected ? (root.armed ? "Blink armed" : "Blink disarmed") : "Connect Blink")
+    tooltipText: root.lastError ? "Blink: " + root.autoTextSafe(root.lastError) : (root.connected ? (root.armed ? "Blink armed" : "Blink disarmed") : "Connect Blink")
     onPressed: function(buttonCode) { if (buttonCode === Qt.LeftButton) root.toggle() }
   }
 }

@@ -46,7 +46,7 @@ Panel {
   function refresh() {
     if (busy || !connected) return
     busy = true
-    actionProcess.command = ["uv", "run", helperPath, "status"]
+    actionProcess.command = ["uv", "run", "--locked", helperPath, "status"]
     actionProcess.running = true
   }
 
@@ -55,7 +55,7 @@ Panel {
     busy = true
     needs2fa = false
     message = "Connecting securely… first launch may take a moment"
-    loginProcess.command = ["uv", "run", helperPath, "login"]
+    loginProcess.command = ["uv", "run", "--locked", helperPath, "login"]
     loginProcess.running = true
   }
 
@@ -70,14 +70,17 @@ Panel {
     if (busy) return
     busy = true
     message = value ? "Arming…" : "Disarming…"
-    actionProcess.command = ["uv", "run", helperPath, value ? "arm" : "disarm"]
+    actionProcess.command = ["uv", "run", "--locked", helperPath, value ? "arm" : "disarm"]
     actionProcess.running = true
   }
 
   function disconnectBlink() {
     if (busy) return
+    // The live helper owns the loopback proxy and upstream camera connection.
+    // Terminate it before deleting authentication state or hiding the UI.
+    stopLive()
     busy = true
-    actionProcess.command = ["uv", "run", helperPath, "logout"]
+    actionProcess.command = ["uv", "run", "--locked", helperPath, "logout"]
     actionProcess.running = true
   }
 
@@ -86,7 +89,7 @@ Panel {
     liveCamera = String(cameraName)
     liveUrl = ""
     message = "Starting " + liveCamera + " live view…"
-    liveProcess.command = ["uv", "run", helperPath, "live", liveCamera]
+    liveProcess.command = ["uv", "run", "--locked", helperPath, "live", liveCamera]
     liveProcess.running = true
   }
 
@@ -129,11 +132,11 @@ Panel {
           Row {
             width: parent.width
             spacing: Style.space(10)
-            Text { text: "󰄀"; color: root.contentForeground; font.family: root.contentFontFamily; font.pixelSize: 34 }
+            Text { text: "󰄀"; textFormat: Text.PlainText; color: root.contentForeground; font.family: root.contentFontFamily; font.pixelSize: 34 }
             Column {
               width: parent.width - 60
-              Text { text: "BLINK CAMERAS"; color: root.contentForeground; font.family: root.contentFontFamily; font.pixelSize: Style.font.subtitle; font.bold: true }
-              Text { text: root.connected ? (root.armed ? "SYSTEM ARMED" : "SYSTEM DISARMED") : "NOT CONNECTED"; color: root.connected && root.armed ? Color.accent : root.contentForeground; font.family: root.contentFontFamily; font.pixelSize: Style.font.caption }
+              Text { text: "BLINK CAMERAS"; textFormat: Text.PlainText; color: root.contentForeground; font.family: root.contentFontFamily; font.pixelSize: Style.font.subtitle; font.bold: true }
+              Text { text: root.connected ? (root.armed ? "SYSTEM ARMED" : "SYSTEM DISARMED") : "NOT CONNECTED"; textFormat: Text.PlainText; color: root.connected && root.armed ? Color.accent : root.contentForeground; font.family: root.contentFontFamily; font.pixelSize: Style.font.caption }
             }
           }
 
@@ -142,7 +145,7 @@ Panel {
             spacing: Style.space(8)
             visible: !root.connected
 
-            Text { width: parent.width; text: "Connect your Amazon Blink account. Your password is used only for this login and is never saved."; wrapMode: Text.WordWrap; color: root.contentForeground; font.family: root.contentFontFamily; font.pixelSize: Style.font.body }
+            Text { width: parent.width; text: "Connect your Amazon Blink account. Your password is used only for this login and is never saved."; textFormat: Text.PlainText; wrapMode: Text.WordWrap; color: root.contentForeground; font.family: root.contentFontFamily; font.pixelSize: Style.font.body }
             TextField { id: emailField; width: parent.width; placeholderText: "Blink email"; enabled: !root.busy && !root.needs2fa }
             TextField { id: passwordField; width: parent.width; placeholderText: "Blink password"; password: true; enabled: !root.busy && !root.needs2fa; onAccepted: root.connectBlink() }
             TextField { id: codeField; width: parent.width; placeholderText: "2FA code"; visible: root.needs2fa; enabled: root.needs2fa; onAccepted: root.send2fa() }
@@ -178,6 +181,7 @@ Panel {
                 anchors.centerIn: parent
                 visible: root.liveUrl === ""
                 text: "Connecting to " + root.liveCamera + "…"
+                textFormat: Text.PlainText
                 color: "white"
                 font.family: root.contentFontFamily
                 font.pixelSize: Style.font.body
@@ -219,12 +223,13 @@ Panel {
                   id: cameraRow
                   anchors { left: parent.left; right: parent.right; verticalCenter: parent.verticalCenter; margins: Style.space(8) }
                   spacing: Style.space(10)
-                  Text { text: modelData.motion ? "󰍹" : "󰄀"; color: modelData.motion ? Color.accent : root.contentForeground; font.family: root.contentFontFamily; font.pixelSize: 24 }
+                Text { text: modelData.motion ? "󰍹" : "󰄀"; textFormat: Text.PlainText; color: modelData.motion ? Color.accent : root.contentForeground; font.family: root.contentFontFamily; font.pixelSize: 24 }
                   Column {
                     width: parent.width - 128
-                    Text { text: modelData.name; color: root.contentForeground; font.family: root.contentFontFamily; font.bold: true; font.pixelSize: Style.font.body }
+                    Text { text: modelData.name; textFormat: Text.PlainText; color: root.contentForeground; font.family: root.contentFontFamily; font.bold: true; font.pixelSize: Style.font.body }
                     Text {
                       text: "Battery " + (modelData.battery || "unknown") + (modelData.temperatureC === null || modelData.temperatureC === undefined ? "" : "  •  " + modelData.temperatureC + "°C")
+                      textFormat: Text.PlainText
                       color: Qt.darker(root.contentForeground, 1.2); font.family: root.contentFontFamily; font.pixelSize: Style.font.caption
                     }
                   }
@@ -245,6 +250,7 @@ Panel {
             width: parent.width
             visible: root.message !== ""
             text: root.message
+            textFormat: Text.PlainText
             wrapMode: Text.WordWrap
             color: root.contentForeground
             font.family: root.contentFontFamily

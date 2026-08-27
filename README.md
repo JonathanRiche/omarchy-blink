@@ -19,7 +19,7 @@ live view without reaching for your phone.
 - Camera battery, temperature, and motion status
 - Embedded, on-demand live video for each supported camera
 - Guided email/password and 2FA connection flow inside the panel
-- Automatic dependency setup and caching through `uv`
+- Automatic, hash-locked dependency setup and caching through `uv`
 - Configurable refresh interval, limited to a Blink-friendly minimum of 60 seconds
 - No saved password and no secrets inside the plugin directory
 
@@ -43,8 +43,8 @@ The widget is placed in the right section of the bar by default. No Python,
 3. Enter the verification code Blink sends by SMS, WhatsApp, or email.
 4. Wait for the camera list to appear.
 
-The first connection can take a little longer while `uv` downloads the pinned
-BlinkPy runtime. Later launches reuse its cache.
+The first connection can take a little longer while `uv` downloads the pinned,
+hash-locked BlinkPy runtime. Later launches reuse its cache.
 
 ## Use
 
