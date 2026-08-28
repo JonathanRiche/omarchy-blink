@@ -1,6 +1,6 @@
 # Blink Cameras for Omarchy
 
-![Blink Cameras panel in the Omarchy bar](assets/preview.png)
+![Blink Cameras panel in the Omarchy bar](preview.png)
 
 A native [Omarchy](https://omarchy.org/) Quattro bar widget for Amazon Blink
 cameras. Check your system at a glance, arm or disarm it, and open an on-demand

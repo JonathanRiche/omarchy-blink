@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.3 — 2026-08-28
+
+- Move the marketplace screenshot to the required root `preview.png` location
+
 ## 1.0.2 — 2026-08-27
 
 - Use a verified no-follow directory descriptor for all state reads, writes, and deletion
