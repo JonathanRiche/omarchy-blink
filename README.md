@@ -80,7 +80,17 @@ omarchy bar move io.github.jonathanriche.omarchy-blink --section right
   `~/.local/state/omarchy-blink/credentials.json` with user-only permissions.
 - Credentials and camera data are never stored in this Git repository.
 - Live video is proxied only over a loopback socket on your machine.
+- Saved state is read without following symlinks and with strict size/type limits.
+- Camera counts, field lengths, errors, and helper output are bounded before QML receives them.
 - Disconnecting removes the saved authentication and status cache.
+
+> [!WARNING]
+> BlinkPy's current live-view transport uses an unauthenticated ephemeral TCP
+> listener on `127.0.0.1` and does not verify the upstream IMMIS TLS certificate.
+> Another local OS user may be able to connect to an active feed, and a hostile
+> network may be able to intercept it. Use Live View only on a trusted,
+> single-user machine and trusted network. These are upstream BlinkPy transport
+> limitations; closing the panel terminates the listener immediately.
 
 See [SECURITY.md](SECURITY.md) for reporting security issues.
 
@@ -131,7 +141,8 @@ Removing the plugin does not silently delete your Blink session file. Use
 omarchy plugin validate .
 qmllint -I /usr/share/omarchy/shell BarWidget.qml Panel.qml
 uvx ruff check blink_helper.py
-uv run blink_helper.py status
+uv run --with blinkpy==0.25.9 python -m unittest discover -s tests -v
+./run_helper.sh status
 ```
 
 Contributions are welcome. See [CONTRIBUTING.md](CONTRIBUTING.md).

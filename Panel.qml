@@ -22,12 +22,12 @@ Panel {
   property var systems: []
   property string liveCamera: ""
   property string liveUrl: ""
-  readonly property string helperPath: Qt.resolvedUrl("blink_helper.py").toString().replace(/^file:\/\//, "")
+  readonly property string helperPath: Qt.resolvedUrl("run_helper.sh").toString().replace(/^file:\/\//, "")
   readonly property color contentForeground: bar ? bar.foreground : Color.foreground
   readonly property string contentFontFamily: bar ? bar.fontFamily : Style.font.family
 
   function open() { controller.show(); refresh() }
-  function close() { stopLive(); controller.hide() }
+  function close() { stopLive(); cancelLogin(); controller.hide() }
   function toggle() { if (opened) close(); else open() }
   function switchPanel(direction) {
     if (bar && typeof bar.switchPanelFrom === "function") return bar.switchPanelFrom(hostWidget || root, direction)
@@ -46,7 +46,7 @@ Panel {
   function refresh() {
     if (busy || !connected) return
     busy = true
-    actionProcess.command = ["uv", "run", "--locked", helperPath, "status"]
+    actionProcess.command = [helperPath, "status"]
     actionProcess.running = true
   }
 
@@ -55,7 +55,7 @@ Panel {
     busy = true
     needs2fa = false
     message = "Connecting securely… first launch may take a moment"
-    loginProcess.command = ["uv", "run", "--locked", helperPath, "login"]
+    loginProcess.command = [helperPath, "login"]
     loginProcess.running = true
   }
 
@@ -66,11 +66,19 @@ Panel {
     message = "Verifying code…"
   }
 
+  function cancelLogin() {
+    if (loginProcess.running) loginProcess.running = false
+    passwordField.text = ""
+    codeField.text = ""
+    needs2fa = false
+    busy = false
+  }
+
   function setArmed(value) {
     if (busy) return
     busy = true
     message = value ? "Arming…" : "Disarming…"
-    actionProcess.command = ["uv", "run", "--locked", helperPath, value ? "arm" : "disarm"]
+    actionProcess.command = [helperPath, value ? "arm" : "disarm"]
     actionProcess.running = true
   }
 
@@ -80,7 +88,7 @@ Panel {
     // Terminate it before deleting authentication state or hiding the UI.
     stopLive()
     busy = true
-    actionProcess.command = ["uv", "run", "--locked", helperPath, "logout"]
+    actionProcess.command = [helperPath, "logout"]
     actionProcess.running = true
   }
 
@@ -89,7 +97,7 @@ Panel {
     liveCamera = String(cameraName)
     liveUrl = ""
     message = "Starting " + liveCamera + " live view…"
-    liveProcess.command = ["uv", "run", "--locked", helperPath, "live", liveCamera]
+    liveProcess.command = [helperPath, "live", liveCamera]
     liveProcess.running = true
   }
 
@@ -294,10 +302,9 @@ Panel {
         } catch (error) { root.message = "Could not understand Blink login response" }
       }
     }
-    stderr: StdioCollector { id: loginError; waitForEnd: true }
     onExited: function(exitCode) {
       root.busy = false
-      if (exitCode !== 0 && !root.needs2fa && root.message === "") root.message = String(loginError.text || "Blink login failed")
+      if (exitCode !== 0 && !root.needs2fa && root.message === "") root.message = "Blink login failed"
     }
   }
 
@@ -306,7 +313,6 @@ Panel {
     running: false
     command: []
     stdout: StdioCollector { id: actionOutput; waitForEnd: true }
-    stderr: StdioCollector { id: actionError; waitForEnd: true }
     onExited: function(exitCode) {
       root.busy = false
       var output = String(actionOutput.text || "")
@@ -317,7 +323,7 @@ Panel {
           if (root.hostWidget) root.hostWidget.applyStatus(output)
           root.message = data.error || ""
         } catch (error) { root.message = "Invalid Blink response" }
-      } else if (exitCode !== 0) root.message = String(actionError.text || "Blink action failed")
+      } else if (exitCode !== 0) root.message = "Blink action failed"
     }
   }
 
@@ -343,12 +349,11 @@ Panel {
         } catch (error) { root.message = "Invalid live-view response" }
       }
     }
-    stderr: StdioCollector { id: liveError; waitForEnd: true }
     onExited: function(exitCode) {
       livePlayer.stop()
       root.liveUrl = ""
       if (exitCode !== 0 && root.message.indexOf("Live view:") !== 0)
-        root.message = String(liveError.text || "Live view stopped")
+        root.message = "Live view stopped"
     }
   }
 }

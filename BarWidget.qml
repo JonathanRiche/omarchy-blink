@@ -11,7 +11,7 @@ BarWidget {
   property bool armed: false
   property bool refreshing: false
   property string lastError: ""
-  readonly property string helperPath: Qt.resolvedUrl("blink_helper.py").toString().replace(/^file:\/\//, "")
+  readonly property string helperPath: Qt.resolvedUrl("run_helper.sh").toString().replace(/^file:\/\//, "")
   readonly property bool opened: panelLoader.item ? panelLoader.item.opened === true : false
   readonly property bool popoutSwitchClosing: panelLoader.item ? panelLoader.item.popoutSwitchClosing === true : false
 
@@ -37,7 +37,7 @@ BarWidget {
   function refresh() {
     if (refreshing) return
     refreshing = true
-    statusProcess.command = ["uv", "run", "--locked", helperPath, "status"]
+    statusProcess.command = [helperPath, "status"]
     statusProcess.running = true
   }
 
@@ -78,12 +78,11 @@ BarWidget {
     running: false
     command: []
     stdout: StdioCollector { id: statusOutput; waitForEnd: true }
-    stderr: StdioCollector { id: statusError; waitForEnd: true }
     onExited: function(exitCode) {
       root.refreshing = false
       var output = String(statusOutput.text || "")
       if (output) root.applyStatus(output)
-      else if (exitCode !== 0) root.lastError = String(statusError.text || "Blink refresh failed")
+      else if (exitCode !== 0) root.lastError = "Blink refresh failed"
     }
   }
 
